@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kotlin-compiler-svc
+spec:
+  #type: NodePort
+  ports:
+  - protocol: TCP
+    port: 8080
+  selector:
+    type: tock-studio
+    service: kotlin-compiler
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kotlin-compiler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      type: tock-studio
+      service: kotlin-compiler
+  template:
+    metadata:
+      labels:
+        type: tock-studio
+        service: kotlin-compiler
+    spec:
+      containers:
+      - name: build-worker
+        image: tock/kotlin_compiler:latest
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 8080
+          initialDelaySeconds: 30
+          timeoutSeconds: 1 # Defaults to 1
+          periodSeconds: 10 # Defaults to 10
+          failureThreshold: 3 # Defaults to 3
+        envFrom:
+        - configMapRef:
+            name: kotlin-compiler-cfg

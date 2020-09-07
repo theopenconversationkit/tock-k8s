@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: build-worker-cfg
+data:
+  tock_mongo_url: mongodb://mongo1-svc:27017,mongo2-svc:27017,mongo3-svc:27017/?replicaSet=tock
+  tock_env: prod

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kotlin-compiler-cfg
+data:
+  tock_env: prod
+  tock_kotlin_compiler_classpath: /maven

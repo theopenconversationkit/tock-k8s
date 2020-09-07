@@ -1,0 +1,174 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: mongodb-sc
+provisioner: kubernetes.io/no-provisioner
+volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongodb-pv
+spec:
+  capacity:
+    storage: 2Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: mongodb-sc
+  local:
+    path: /tmp/tock-mongo
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - kind-control-plane
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mongodb-pvc
+spec:
+  storageClassName: mongodb-sc
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo1
+spec:
+  serviceName: mongo1
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo1
+  template:
+    metadata:
+      labels:
+        type: mongo
+        app: mongo1
+        selector: mongo1
+    spec:
+      containers:
+        - name: mongo1
+          image: mongo:3.6.5
+          volumeMounts:
+            - name: mongodb-conf
+              mountPath: /config
+              readOnly: true
+            - name: mongodb-data
+              mountPath: /data/db
+          command: ["mongod"]
+          args: ["--smallfiles", "--bind_ip_all", "--port", "27017", "--replSet", "tock"]
+      volumes:
+        - name: mongodb-conf
+          configMap:
+            name: mongodb-cm
+            items:
+              - key: mongo.conf
+                path: mongo.conf
+        - name: mongodb-data
+          persistentVolumeClaim:
+            claimName: mongodb-pvc
+#      nodeSelector:
+#        kubernetes.io/hostname: mongodb-node
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo1-svc
+  labels:
+    type: mongo
+    app: mongo1
+spec:
+  ports:
+    - protocol: TCP
+      port: 27017
+  selector:
+    app: mongo1
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo2
+spec:
+  serviceName: mongo2
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo2
+  template:
+    metadata:
+      labels:
+        type: mongo
+        app: mongo2
+        selector: mongo2
+    spec:
+      containers:
+        - name: mongo2
+          image: mongo:3.6.5
+          command: ["mongod"]
+          args: ["--smallfiles", "--bind_ip_all", "--port", "27017", "--replSet", "tock"]
+#      nodeSelector:
+#        kubernetes.io/hostname: mongodb-node
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo2-svc
+  labels:
+    type: mongo
+    app: mongo2
+spec:
+  ports:
+    - protocol: TCP
+      port: 27017
+  selector:
+    app: mongo2
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo3
+spec:
+  serviceName: mongo3
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo3
+  template:
+    metadata:
+      labels:
+        type: mongo
+        app: mongo3
+        selector: mongo3
+    spec:
+      containers:
+        - name: mongo3
+          image: mongo:3.6.5
+          command: ["mongod"]
+          args: ["--smallfiles", "--bind_ip_all", "--port", "27017", "--replSet", "tock"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo3-svc
+  labels:
+    type: mongo
+    app: mongo3
+spec:
+  ports:
+    - protocol: TCP
+      port: 27017
+  selector:
+    app: mongo3
