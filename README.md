@@ -7,7 +7,7 @@ Kubernetes implementation and resources for Tock.
 [kind](https://kind.sigs.k8s.io/) is a tool for running local Kubernetes clusters using Docker container “nodes”.
 
 ```sh
-curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.7.0/kind-linux-amd64
+curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.8.1/kind-linux-amd64
 chmod +x ./kind
 ```
 
@@ -16,7 +16,7 @@ chmod +x ./kind
 See [Ingress](https://kind.sigs.k8s.io/docs/user/ingress/)
 
 ```
-kind create cluster --config=./kind/kind.config.yaml
+./kind create cluster --config=./kind-config/kind.config.yaml
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.27.0/deploy/static/mandatory.yaml
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.27.0/deploy/static/provider/baremetal/service-nodeport.yaml
@@ -40,6 +40,10 @@ kubectl logs -f -l type=mongo
 kubectl logs -f -l type=tock-studio
 ```
 
+```
+kubectl logs -f -l type=bot-api
+```
+
 ## Stopping TOCK STUDIO
 
 ```
@@ -49,5 +53,5 @@ kubectl logs -f -l type=tock-studio
 ## Destroy your kind cluster
 
 ```
-kind delete cluster
+./kind delete cluster
 ```

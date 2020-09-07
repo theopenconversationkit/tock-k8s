@@ -1,37 +1,37 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: nlp-api-svc
+  name: bot-api-svc
 spec:
   #type: NodePort
   ports:
     - protocol: TCP
       port: 8080
   selector:
-    type: tock-studio
-    service: nlp-api
+    type: bot-api
+    service: bot-api
 
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nlp-api
+  name: bot-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      type: tock-studio
-      service: nlp-api
+      type: bot-api
+      service: bot-api
   template:
     metadata:
       labels:
-        type: tock-studio
-        service: nlp-api
+        type: bot-api
+        service: bot-api
     spec:
       containers:
-        - name: nlp-api
-          image: tock/nlp_api:latest
+        - name: bot-api
+          image: tock/bot_api:latest
           livenessProbe:
             httpGet:
               path: /healthcheck
@@ -42,4 +42,4 @@ spec:
             failureThreshold: 3 # Defaults to 3
           envFrom:
             - configMapRef:
-                name: nlp-api-cfg
+                name: bot-api-cfg
