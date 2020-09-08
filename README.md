@@ -27,7 +27,7 @@ kubectl patch deployments -n ingress-nginx nginx-ingress-controller -p '{"spec":
 
 `./start.sh`
 
-Notice : All data are stored in "tock-mongo/" folder
+Notice : All data are stored in "tock-mongo-data/" folder
 All services are deployed with "tock" namespace
 
 ## Logs 
