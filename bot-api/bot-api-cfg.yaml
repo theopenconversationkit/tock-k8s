@@ -7,4 +7,8 @@ data:
   tock_nlp_service_url: http://nlp-api-svc:8080
   tock_env: integ
   tock_websocket_enabled: "true"
+  tock_web_sse: "true"
+  tock_web_use_default_cors_handler: "false"
+  tock_web_use_default_cors_handler_with_credentials: "false"
+  tock_web_use_default_cors_handler_url: "*"
 

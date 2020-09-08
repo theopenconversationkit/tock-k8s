@@ -34,7 +34,7 @@ spec:
           image: tock/nlp_api:latest
           livenessProbe:
             httpGet:
-              path: /healthcheck
+              path: /rest/nlp/healthcheck
               port: 8080
             initialDelaySeconds: 30
             timeoutSeconds: 1 # Defaults to 1

@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 ./bot-api/stop.sh
 ./tock-studio/stop.sh
 ./mongo/stop.sh
