@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: nlp-api-cfg
 data:
-  tock_mongo_url: mongodb://mongo1-svc:27017,mongo2-svc:27017,mongo3-svc:27017/?replicaSet=tock
+  tock_mongo_url: mongodb://mongo-0.mongo:27017,mongo-1.mongo:27017,mongo-2.mongo:27017/?replicaSet=tock
   nlp_duckling_url: http://duckling-svc:8080
   tock_env: prod
   tock_web_use_default_cors_handler: "true"

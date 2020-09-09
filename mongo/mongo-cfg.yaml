@@ -20,15 +20,15 @@ data:
     #!/bin/bash
 
     echo "Waiting for startup.."
-    until mongo --host mongo1-svc:27017 --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
+    until mongo --host mongo-0.mongo:27017 --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
       printf '.'
       sleep 1
     done
-    until mongo --host mongo2-svc:27017 --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
+    until mongo --host mongo-1.mongo:27017 --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
       printf '.'
       sleep 1
     done
-    until mongo --host mongo3-svc:27017 --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
+    until mongo --host mongo-2.mongo:27017 --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
       printf '.'
       sleep 1
     done
@@ -36,21 +36,21 @@ data:
     echo "Started.."
 
     echo setup.sh time now: `date +"%T" `
-    mongo --host mongo1-svc:27017 <<EOF
+    mongo --host mongo-0.mongo:27017 <<EOF
        var cfg = {
             "_id": "tock",
             "members": [
                 {
                     "_id": 0,
-                    "host": "mongo1-svc:27017"
+                    "host": "mongo-0.mongo:27017"
                 },
                 {
                     "_id": 1,
-                    "host": "mongo2-svc:27017"
+                    "host": "mongo-1.mongo:27017"
                 },
                 {
                     "_id": 2,
-                    "host": "mongo3-svc:27017"
+                    "host": "mongo-2.mongo:27017"
                 }
             ]
         };

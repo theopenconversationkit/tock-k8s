@@ -1,11 +1,5 @@
 #!/bin/bash
 set -e
-kubectl config set-context tock \
- --namespace=tock \
- --cluster=kind-kind \
- --user=kind-kind
-
-kubectl config use-context tock
 
 ./namespaces/init.sh
 ./mongo/start.sh

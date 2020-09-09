@@ -1,4 +1,4 @@
 #!/bin/bash
-kubectl delete -n tock -f mongo/mongo-cfg.yaml
-kubectl delete -n tock -f mongo/mongo.yaml
-kubectl delete -n tock -f mongo/mongo-setup.yaml
+kubectl delete  -f mongo/mongo-cfg.yaml
+kubectl delete  -f mongo/mongo.yaml
+kubectl delete  -f mongo/mongo-setup.yaml

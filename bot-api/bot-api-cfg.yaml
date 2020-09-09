@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: bot-api-cfg
 data:
-  tock_mongo_url: mongodb://mongo1-svc:27017,mongo2-svc:27017,mongo3-svc:27017/?replicaSet=tock
+  tock_mongo_url: mongodb://mongo-0.mongo:27017,mongo-1.mongo:27017,mongo-2.mongo:27017/?replicaSet=tock
   tock_nlp_service_url: http://nlp-api-svc:8080
   tock_env: integ
   tock_websocket_enabled: "true"

@@ -9,17 +9,63 @@ allowVolumeExpansion: true
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: mongodb-pv
+  name: mongo-pv-mongo-0
 spec:
   capacity:
-    storage: 2Gi
+    storage: 200Mi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: mongodb-sc
   local:
-    path: /tmp/tock-mongo
+    path: /tmp/tock-mongo/mongo-0
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - kind-control-plane
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-pv-mongo-1
+spec:
+  capacity:
+    storage: 200Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: mongodb-sc
+  local:
+    path: /tmp/tock-mongo/mongo-1
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - kind-control-plane
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-pv-mongo-2
+spec:
+  capacity:
+    storage: 200Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: mongodb-sc
+  local:
+    path: /tmp/tock-mongo/mongo-2
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -32,7 +78,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: mongodb-pvc
+  name: mongo-pvc-mongo-0
 spec:
   storageClassName: mongodb-sc
   accessModes:
@@ -40,33 +86,73 @@ spec:
   volumeMode: Filesystem
   resources:
     requests:
-      storage: 1Gi
+      storage: 100Mi
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mongo-pvc-mongo-1
+spec:
+  storageClassName: mongodb-sc
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Mi
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mongo-pvc-mongo-2
+spec:
+  storageClassName: mongodb-sc
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  labels:
+    name: mongo
+spec:
+  ports:
+    - port: 27017
+      targetPort: 27017
+  clusterIP: None
+  selector:
+    app: mongo
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mongo1
+  name: mongo
 spec:
-  serviceName: mongo1
-  replicas: 1
+  serviceName: mongo
+  replicas: 3
   selector:
     matchLabels:
-      app: mongo1
+      app: mongo
   template:
     metadata:
       labels:
         type: mongo
-        app: mongo1
-        selector: mongo1
+        app: mongo
+        selector: mongo
     spec:
       containers:
-        - name: mongo1
+        - name: mongo
           image: mongo:3.6.5
           volumeMounts:
             - name: mongodb-conf
               mountPath: /config
               readOnly: true
-            - name: mongodb-data
+            - name: mongo-pvc
               mountPath: /data/db
           command: ["mongod"]
           args: ["--smallfiles", "--bind_ip_all", "--port", "27017", "--replSet", "tock"]
@@ -77,98 +163,13 @@ spec:
             items:
               - key: mongo.conf
                 path: mongo.conf
-        - name: mongodb-data
-          persistentVolumeClaim:
-            claimName: mongodb-pvc
-#      nodeSelector:
-#        kubernetes.io/hostname: mongodb-node
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mongo1-svc
-  labels:
-    type: mongo
-    app: mongo1
-spec:
-  ports:
-    - protocol: TCP
-      port: 27017
-  selector:
-    app: mongo1
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: mongo2
-spec:
-  serviceName: mongo2
-  replicas: 1
-  selector:
-    matchLabels:
-      app: mongo2
-  template:
-    metadata:
-      labels:
-        type: mongo
-        app: mongo2
-        selector: mongo2
-    spec:
-      containers:
-        - name: mongo2
-          image: mongo:3.6.5
-          command: ["mongod"]
-          args: ["--smallfiles", "--bind_ip_all", "--port", "27017", "--replSet", "tock"]
-#      nodeSelector:
-#        kubernetes.io/hostname: mongodb-node
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mongo2-svc
-  labels:
-    type: mongo
-    app: mongo2
-spec:
-  ports:
-    - protocol: TCP
-      port: 27017
-  selector:
-    app: mongo2
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: mongo3
-spec:
-  serviceName: mongo3
-  replicas: 1
-  selector:
-    matchLabels:
-      app: mongo3
-  template:
-    metadata:
-      labels:
-        type: mongo
-        app: mongo3
-        selector: mongo3
-    spec:
-      containers:
-        - name: mongo3
-          image: mongo:3.6.5
-          command: ["mongod"]
-          args: ["--smallfiles", "--bind_ip_all", "--port", "27017", "--replSet", "tock"]
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mongo3-svc
-  labels:
-    type: mongo
-    app: mongo3
-spec:
-  ports:
-    - protocol: TCP
-      port: 27017
-  selector:
-    app: mongo3
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-pvc
+      spec:
+        storageClassName: mongodb-sc
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 50Mi

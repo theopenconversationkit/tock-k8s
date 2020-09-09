@@ -5,8 +5,12 @@ nodes:
 - role: control-plane
   # add a mount from /path/to/my/files on the host to /files on the node
   extraMounts:
-  - hostPath: tock-mongo-data
-    containerPath: /tmp/tock-mongo
+  - hostPath: tock-mongo-data/mongo-0
+    containerPath: /tmp/tock-mongo/mongo-0
+  - hostPath: tock-mongo-data/mongo-1
+    containerPath: /tmp/tock-mongo/mongo-1
+  - hostPath: tock-mongo-data/mongo-2
+    containerPath: /tmp/tock-mongo/mongo-2
   kubeadmConfigPatches:
   - |
     kind: InitConfiguration
