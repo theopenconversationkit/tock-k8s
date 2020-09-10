@@ -8,7 +8,7 @@ data:
   tock_env: prod
   tock_bot_admin_rest_default_base_url: http://bot-api-svc:8080
   tock_bot_compiler_service_url: http://kotlin-compiler-svc:8080
-  tock_configuration_bot_default_base_url: http://bot-api
+  tock_configuration_bot_default_base_url: http://bot-api-svc:8080
   tock_bot_api: "true"
   tock_https_env: "false"
   adminverticle_body_limit: "-1"
