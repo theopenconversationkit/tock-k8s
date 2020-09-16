@@ -16,4 +16,4 @@ kubectl delete  -f "$DIR"/kotlin-compiler/kotlin-compiler.yaml
 kubectl delete  -f "$DIR"/build-worker/build-worker-cfg.yaml
 kubectl delete  -f "$DIR"/build-worker/build-worker.yaml
 
-kubectl delete  -f "$DIR"/tock-studio.ing.yaml
+kubectl delete  -f "$DIR"/"$TARGET_PLATFORM"/tock-studio.ing.yaml

@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-
 ./namespaces/init.sh
 ./mongo/start.sh
 ./wait_for.sh pod -ltype=mongo

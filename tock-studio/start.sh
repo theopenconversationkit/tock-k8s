@@ -16,4 +16,4 @@ kubectl apply -f "$DIR"/kotlin-compiler/kotlin-compiler.yaml
 kubectl create -f "$DIR"/build-worker/build-worker-cfg.yaml
 kubectl apply -f "$DIR"/build-worker/build-worker.yaml
 
-kubectl apply -f "$DIR"/tock-studio.ing.yaml
+kubectl apply -f "$DIR"/ingress/"$TARGET_PLATFORM"/tock-studio.ing.yaml

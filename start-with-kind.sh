@@ -8,5 +8,4 @@ kubectl config set-context tock-kind \
 
 kubectl config use-context tock-kind
 
-
-./start.sh
+TARGET_PLATFORM=kind ./start.sh
