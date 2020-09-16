@@ -10,7 +10,7 @@ Kubernetes implementation and resources for Tock.
 curl -Lo ./kind https://github.com/kubernetes-sigs/kind/releases/download/v0.8.1/kind-linux-amd64
 chmod +x ./kind
 ./create-kind-cluster.sh
-./start -with-kind.sh
+./start-with-kind.sh
 ```
 
 Notice : All data are stored in "tock-mongo-data/" folder
