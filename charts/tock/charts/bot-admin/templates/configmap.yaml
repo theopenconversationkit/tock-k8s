@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "bot-admin.fullname" . }}
+  labels:
+    {{- include "bot-admin.labels" . | nindent 4 }}
+data:
+  tock_mongo_url: {{ include "tock.mongoUrl" . }}
+  nlp_duckling_url: "http://{{ .Release.Name }}-duckling:8080"
+  tock_env: prod
+  tock_bot_admin_rest_default_base_url: "http://{{ .Release.Name }}-bot-api:8080"
+  tock_bot_compiler_service_url: "http://{{ .Release.Name }}-kotlin-compiler:8080"
+  tock_configuration_bot_default_base_url: "http://{{ .Release.Name }}-bot-api:8080"
+  tock_bot_api: "true"
+  tock_https_env: "false"
+  adminverticle_body_limit: "-1"

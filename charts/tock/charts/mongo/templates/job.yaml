@@ -1,0 +1,58 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "mongo.fullname" . }}-setup
+  labels:
+    {{- include "mongo.labels" . | nindent 4 }}
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: wait-startup
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: ["bash", "-c"]
+          args:
+            - |-
+                echo "Waiting for startup.."
+                until mongo --host {{ include "mongo.fullname" . }}-0.{{ include "mongo.fullname" . }}:27017 --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
+                  printf '.'
+                  sleep 1
+                done
+                until mongo --host {{ include "mongo.fullname" . }}-1.{{ include "mongo.fullname" . }}:27017 --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
+                  printf '.'
+                  sleep 1
+                done
+                until mongo --host {{ include "mongo.fullname" . }}-2.{{ include "mongo.fullname" . }}:27017 --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; do
+                  printf '.'
+                  sleep 1
+                done
+                echo "Started.."
+      containers:
+        - name: mongo-setup
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command: ["bash", "-c"]
+          args:
+            - |-
+                echo setup.sh time now: `date +"%T" `
+                mongo --host {{ include "mongo.fullname" . }}-0.{{ include "mongo.fullname" . }}:27017 <<EOF
+                   var cfg = {
+                        "_id": "tock",
+                        "members": [
+                            {
+                                "_id": 0,
+                                "host": "{{ include "mongo.fullname" . }}-0.{{ include "mongo.fullname" . }}:27017"
+                            },
+                            {
+                                "_id": 1,
+                                "host": "{{ include "mongo.fullname" . }}-1.{{ include "mongo.fullname" . }}:27017"
+                            },
+                            {
+                                "_id": 2,
+                                "host": "{{ include "mongo.fullname" . }}-2.{{ include "mongo.fullname" . }}:27017"
+                            }
+                        ]
+                    };
+                    rs.initiate(cfg, { force: true });
+                    rs.reconfig(cfg, { force: true });
+                EOF
+      restartPolicy: Never
