@@ -1,5 +1,5 @@
 apiVersion: v2
-name: bot-admin
+name: build-worker
 description: Bot admin of tock
 type: application
 version: 0.1.0
