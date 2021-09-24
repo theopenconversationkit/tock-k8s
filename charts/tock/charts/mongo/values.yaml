@@ -9,6 +9,7 @@ image:
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
+  echoserver: "gcr.io/google-containers/echoserver:1.10"
 
 service:
   type: ClusterIP

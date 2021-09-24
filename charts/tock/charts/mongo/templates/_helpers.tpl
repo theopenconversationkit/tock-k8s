@@ -51,6 +51,14 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Selector labels for setup
+*/}}
+{{- define "mongoSetup.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "mongo.name" . }}-setup
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "mongo.serviceAccountName" -}}

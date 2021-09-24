@@ -91,6 +91,21 @@ spec:
       {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: wait-mongo
+          image: "busybox:1.33"
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |-
+                echo "Wait for mongo to be up"
+                while true;
+                do
+                  timeout 5 nc {{ .Release.Name }}-mongo-setup 8080 && echo "ok" && exit ;
+                  echo "waiting"
+                  sleep 5
+                done
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
