@@ -53,3 +53,5 @@ configMap: |-
   tock_websocket_enabled: "true"
 
 healthEndpoint: "/healthcheck"
+
+serviceDependencies: ["nlp-api"]

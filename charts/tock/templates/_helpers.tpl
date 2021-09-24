@@ -92,6 +92,10 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
+        - name: pull-image
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["sh", "-c", "echo ok"]
         - name: wait-mongo
           image: "busybox:1.33"
           imagePullPolicy: IfNotPresent
@@ -106,6 +110,22 @@ spec:
                   echo "waiting"
                   sleep 5
                 done
+        {{- range $svc := .Values.serviceDependencies }}
+        - name: wait-{{ $svc }}
+          image: "busybox:1.33"
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |-
+                echo "Wait for {{ $svc }} to be up"
+                while true;
+                do
+                  timeout 5 nc {{ $.Release.Name }}-{{ $svc }} 8080 && echo "ok" && exit ;
+                  echo "waiting"
+                  sleep 5
+                done
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -123,7 +143,12 @@ spec:
             httpGet:
               path: {{ .Values.healthEndpoint }}
               port: http
-          readinessProbe: *liveness
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          readinessProbe:
+            <<: *liveness
+            periodSeconds: 10
+            initialDelaySeconds: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

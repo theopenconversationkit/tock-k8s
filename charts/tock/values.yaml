@@ -83,3 +83,5 @@ affinity: {}
 
 configMap: |-
   # defined in sub charts
+
+serviceDependencies: []
