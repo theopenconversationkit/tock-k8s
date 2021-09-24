@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mongo.fullname" . }}-setup
+  labels:
+    {{- include "mongo.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "mongoSetup.selectorLabels" . | nindent 6 }}
+
+  template:
+    metadata:
+      labels:
+        {{- include "mongoSetup.selectorLabels" . | nindent 8 }}
+    spec:
+      initContainers:
+        - name: init-mongo
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          env:
+            - name: MONGO_SVC
+              value: "{{ include "mongo.fullname" . }}"
+          command: ["bash", "-c"]
+          args:
+            - |-
+                {{- .Files.Get "files/init-mongo.sh" | nindent 16 }}
+      containers:
+        - name: echo
+          image: "{{ .Values.image.echoserver }}"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe: &probe
+            httpGet:
+              port: http
+            periodSeconds: 30
+          livenessProbe: *probe
+          resources:
+            limits:
+              cpu: "50m"
+              memory: 40Mi
+            requests:
+              cpu: "10m"
+              memory: 10Mi
