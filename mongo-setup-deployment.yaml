@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file docker-compose.yml convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mongo-setup
+  name: mongo-setup
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: mongo-setup
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file docker-compose.yml convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mongo-setup
+    spec:
+      containers:
+        - command:
+            - /scripts/setup.sh
+          env:
+            - name: MONGO1
+              value: mongo
+            - name: MONGO2
+              value: mongo2
+            - name: MONGO3
+              value: mongo3
+            - name: RS
+              value: tock
+          image: mongo:3.6.5
+          name: mongo-setup
+          resources:
+            limits:
+              cpu: "300m"
+              memory: 300Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+          volumeMounts:
+            - mountPath: /scripts
+              name: setup
+      restartPolicy: Always
+      volumes:
+        - name: mongo-setup-claim0
+          persistentVolumeClaim:
+            claimName: mongo-setup-claim0
+        - name: setup
+          configMap:
+            name: mongo-setup
+            defaultMode: 0777
+status: {}

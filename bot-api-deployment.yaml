@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file docker-compose.yml convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: bot-api
+  name: bot-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: bot-api
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file docker-compose.yml convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: bot-api
+    spec:
+      containers:
+        - env:
+            - name: tock_env
+              value: integ
+            - name: tock_mongo_url
+              value: mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock
+            - name: tock_nlp_service_url
+              value: http://nlp-api:8888
+            - name: tock_websocket_enabled
+              value: "true"
+          image: 'tock/bot_api:latest'
+          name: bot-api
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "300m"
+              memory: 300Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+      restartPolicy: Always
+status: {}

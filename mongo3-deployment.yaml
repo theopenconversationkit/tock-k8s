@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file docker-compose.yml convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: mongo3
+  name: mongo3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: mongo3
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file docker-compose.yml convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: mongo3
+    spec:
+      containers:
+        - args:
+            - --smallfiles
+            - --bind_ip_all
+            - --port
+            - "27019"
+            - --replSet
+            - tock
+          image: mongo:3.6.5
+          name: mongo3
+          ports:
+            - containerPort: 27019
+          resources:
+            limits:
+              cpu: "300m"
+              memory: 300Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+          volumeMounts:
+            - mountPath: /data/db
+              name: tockmongo3
+      restartPolicy: Always
+      volumes:
+        - name: tockmongo3
+          persistentVolumeClaim:
+            claimName: tockmongo3
+status: {}

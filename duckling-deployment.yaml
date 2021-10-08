@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file docker-compose.yml convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: duckling
+  name: duckling
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: duckling
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file docker-compose.yml convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: duckling
+    spec:
+      containers:
+        - env:
+            - name: tock_env
+              value: prod
+          image: 'tock/duckling:latest'
+          name: duckling
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "300m"
+              memory: 300Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+      restartPolicy: Always
+status: {}

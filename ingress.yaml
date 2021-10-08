@@ -1,0 +1,65 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+  generation: 1
+  labels:
+    ingress: tls
+    project: my-project
+  name: admin-web
+spec:
+  rules:
+  - host: <hostname for admin-web>
+    http:
+      paths:
+      - backend:
+          serviceName: admin-web
+          servicePort: 80
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+  generation: 1
+  labels:
+    ingress: tls
+    project: my-project
+  name: nlp-api
+spec:
+  rules:
+  - host: <hostname for nlp-api>
+    http:
+      paths:
+      - backend:
+          serviceName: nlp-api
+          servicePort: 8888
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/redirect-entry-point: https
+  generation: 1
+  labels:
+    ingress: tls
+    project: my-project
+  name: bot-api
+spec:
+  rules:
+  - host: <hostname for bot-api>
+    http:
+      paths:
+      - backend:
+          serviceName: bot-api
+          servicePort: 8080
+status:
+  loadBalancer: {}

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file docker-compose.yml convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: nlp-api
+  name: nlp-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: nlp-api
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file docker-compose.yml convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: nlp-api
+    spec:
+      containers:
+        - env:
+            - name: nlp_duckling_url
+              value: http://duckling:8080
+            - name: tock_env
+              value: prod
+            - name: tock_mongo_url
+              value: mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock
+            - name: tock_web_use_default_cors_handler
+              value: "true"
+            - name: tock_web_use_default_cors_handler_url
+              value: '*'
+            - name: tock_web_use_default_cors_handler_with_credentials
+              value: "false"
+          image: 'tock/nlp_api:latest'
+          name: nlp-api
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "300m"
+              memory: 300Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+      restartPolicy: Always
+status: {}

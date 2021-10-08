@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose --file docker-compose.yml convert
+    kompose.version: 1.22.0 (955b78124)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: admin-web
+  name: admin-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: admin-web
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose --file docker-compose.yml convert
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: admin-web
+    spec:
+      containers:
+        - env:
+            - name: botadminverticle_body_limit
+              value: "-1"
+            - name: nlp_duckling_url
+              value: http://duckling:8080
+            - name: tock_bot_admin_rest_default_base_url
+              value: http://bot_api:8080
+            - name: tock_bot_compiler_service_url
+              value: http://kotlin_compiler:8080
+            - name: tock_configuration_bot_default_base_url
+              value: http://bot_api:8080
+            - name: tock_env
+              value: prod
+            - name: tock_https_env
+              value: "false"
+            - name: tock_mongo_url
+              value: mongodb://mongo:27017,mongo2:27018,mongo3:27019/?replicaSet=tock
+          image: 'tock/bot_admin:latest'
+          name: admin-web
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "300m"
+              memory: 300Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
+      restartPolicy: Always
+status: {}
